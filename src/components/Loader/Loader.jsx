@@ -2,7 +2,7 @@ import React from "react";
 import { RotatingLines } from 'react-loader-spinner';
 import css from './Loader.module.css';
 
-const Loader = () => {
+function Loader() {
     return (
         <div className={css.loader}>
             <RotatingLines
@@ -13,7 +13,7 @@ const Loader = () => {
                 visible={true}
             />
         </div>
-    )
+    );
 }
 
 export default Loader;

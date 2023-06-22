@@ -1,64 +1,65 @@
-import React from 'react';
-import { Searchbar } from './Searchbar/Searchbar';
+import React, {useState} from 'react';
+import Searchbar from './Searchbar/Searchbar';
 import { getImages } from '../api/pixabayApi';
 import ImageGallery from './ImageGallery/ImageGallery';
 import Loader from './Loader/Loader';
 import Modal from './Modal/Modal';
 import Button from './Button/Button';
 
+function App() {
+  const [query, setQuery] = useState('');
+  const [images, setImages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [totalImages, setTotalImages] = useState(0);
 
-export class App extends React.Component {
-  state = {
-    imageName: '',
-    images: [],
-    isLoading: false,
-    page: 1,
-    selectedImage: null,
-    totalImages: 0
+  const handleFormSubmit = query => {
+    setQuery(query);
+    setIsLoading(true);
+    getImages(query, 1)
+      .then((data) => {
+        setImages(data.hits);
+        setTotalImages(data.totalHits);
+        setIsLoading(false);
+      });
   }
 
-  handleFormSubmit = imageName => {
-    this.setState({ imageName, isLoading: true });
-    getImages(imageName, 1).then(data => this.setState({ images: data.hits, totalImages: data.totalHits, isLoading: false, page: 1}));
-  }
-
-  handleLoadMore = () => {
-    const { page, imageName } = this.state;
+  const handleLoadMore = () => {
     const nextPage = page + 1;
+    setIsLoading(true);
 
-    this.setState({ isLoading: true });
-      getImages(imageName, nextPage).then(data => this.setState(prevState => ({
-        images: [...prevState.images, ...data.hits],
-        page: nextPage,
-        isLoading: false,
-      })));
+    getImages(query, nextPage)
+      .then((data) => {
+        setImages(prevImages => [...prevImages, ...data.hits]);
+        setPage(nextPage);
+        setIsLoading(false);
+      });
   }
 
-  handleOpenModal = selectedImage => {
-    this.setState({ selectedImage });
+  const handleOpenModal = selectedImage => {
+    setSelectedImage(selectedImage);
   };
 
-  handleCloseModal = () => {
-    this.setState({ selectedImage: null });
+  const handleCloseModal = () => {
+    setSelectedImage(null);
   };
 
-  render() {
-    const { images, isLoading, selectedImage, totalImages } = this.state;
-
-    return (
-      <div>
-        <Searchbar onSubmit={this.handleFormSubmit} />
-        {isLoading && <Loader />}
-        {images.length !== 0 && <ImageGallery images={images} onOpenModal={this.handleOpenModal} />}
-        {totalImages > 12 && totalImages !== images.length && <Button onClick={this.handleLoadMore}/>}
-        {selectedImage && 
-            <Modal
-              largeImageURL={selectedImage}
-              onClose={this.handleCloseModal}
-            />
-          }
-      </div>
-    )
-  }
+  return (
+    <div>
+      <Searchbar onSubmit={handleFormSubmit} />
+      {isLoading && <Loader />}
+      {images.length !== 0 && <ImageGallery images={images} onOpenModal={handleOpenModal} />}
+      {totalImages > 12 && totalImages !== images.length && <Button onClick={handleLoadMore} />}
+      {selectedImage &&
+        <Modal
+          largeImageURL={selectedImage}
+          onClose={handleCloseModal}
+        />
+      }
+    </div>
+  );
 }
+
+export default App;
 

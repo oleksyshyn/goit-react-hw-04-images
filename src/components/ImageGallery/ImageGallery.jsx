@@ -3,22 +3,20 @@ import ImageGalleryItem from "components/ImageGalleryItem/ImageGalleryItem";
 import css from './ImageGallery.module.css';
 import PropTypes from 'prop-types';
 
-
-const ImageGallery = ({ images, onOpenModal }) => {
-
-    return (
-        <ul className={css.imageGallery}>
-            {images.map(({id, webformatURL, largeImageURL, tags}) => (
-              <ImageGalleryItem
-                key={id}
-                webImage={webformatURL}
-                lagreImage={largeImageURL}
-                alt={tags}
-                onOpenModal={onOpenModal}
-              />
-            ))}
-        </ul>
-    )
+function ImageGallery({ images, onOpenModal }) {
+  return (
+    <ul className={css.imageGallery}>
+      {images.map(({ id, webformatURL, largeImageURL, tags }) => (
+        <ImageGalleryItem
+          key={id}
+          webImage={webformatURL}
+          lagreImage={largeImageURL}
+          alt={tags}
+          onOpenModal={onOpenModal}
+        />
+      ))}
+    </ul>
+  );
 }
 
 export default ImageGallery;

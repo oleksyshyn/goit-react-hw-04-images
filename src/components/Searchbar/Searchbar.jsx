@@ -1,32 +1,28 @@
-import React from "react";
+import React, {useState} from "react";
 import { BsSearch } from "react-icons/bs";
 import css from './Searchbar.module.css';
 import PropTypes from 'prop-types';
 
+function Searchbar({onSubmit}) {
+    const [imageName, setImageName] = useState('');
 
-export class Searchbar extends React.Component {
-    state = {
-        imageName: '',
-    }
-
-    inputChange = e => {
+    const inputChange = e => {
         const imageName = e.target.value.toLowerCase();
-        this.setState({ imageName });
+        setImageName(imageName);
     }
-    
-    formSubmit = e => {
+  
+    const formSubmit = e => {
         e.preventDefault();
-        if (this.state.imageName.trim() === '') {
+        if (imageName.trim() === '') {
             return;
         }
-        this.props.onSubmit(this.state.imageName);
-        this.setState({ imageName: ''});
+        onSubmit(imageName);
+        setImageName('');
     }
 
-    render() {
-      return (
+    return (
         <header className={css.searchbar}>
-            <form onSubmit={this.formSubmit} className={css.form}>
+            <form onSubmit={formSubmit} className={css.form}>
               <button type="submit" className={css.button}>
                       <span className={css.button_label}>Search</span>
                       <BsSearch />
@@ -38,14 +34,15 @@ export class Searchbar extends React.Component {
                   autoComplete="off"
                   autoFocus
                   placeholder="Search images and photos"
-                  value={this.state.imageName}
-                  onChange={this.inputChange}
+                  value={imageName}
+                  onChange={inputChange}
               />
           </form>
         </header>
-      )
-    }
+    )
 }
+
+export default Searchbar;
 
 Searchbar.propTypes = {
   onSubmit: PropTypes.func.isRequired,
